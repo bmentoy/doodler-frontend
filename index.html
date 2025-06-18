@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doodler</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/openpgp@5.11.2/dist/openpgp.min.js"></script>
+</head>
+<body>
+  <header>
+    <h2 class="Logo">Doodler</h2>
+    <nav class="navigation">
+      <a href="#" class="nav-link">Home</a>
+      <a href="#" class="nav-link">About</a>
+      <a href="#" class="nav-link">Services</a>
+      <a href="#" class="nav-link">Help</a>
+      <div class="button-group">
+        <button class="btnSignup-popup">Sign Up</button>
+        <button class="btnLogin-popup">Login</button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Landing Page Content -->
+  <div id="landing-content">
+    <section id="home">
+      <h4>Welcome to Doodler</h4>
+      <p>
+        Doodler is your secure messaging platform, designed to keep your conversations private and safe. With end-to-end encryption, only you and your intended recipient can read your messages. Sign up or log in to start chatting securely today!
+      </p>
+    </section>
+
+    <section id="about">
+      <h4>About Doodler</h4>
+      <p>
+        Doodler is a passion project created to provide a free, secure, and user-friendly messaging service. Our mission is to ensure that anyone can communicate with their friends, family, or colleagues without worrying about prying eyes. Using state-of-the-art end-to-end encryption, Doodler guarantees that your messages remain confidential, with no access by third parties, including us. Whether you're sharing personal updates or sensitive information, Doodler is your trusted platform for private communication.
+      </p>
+    </section>
+
+    <section id="services">
+      <h4>Our Services</h4>
+      <p>
+        Doodler offers a robust set of features to enhance your messaging experience:
+      </p>
+      <ul>
+        <li><strong>End-to-End Encryption:</strong> All messages are encrypted on your device and can only be decrypted by the recipient, ensuring maximum privacy.</li>
+        <li><strong>Real-Time Messaging:</strong> Enjoy instant communication with our WebSocket-based chat system.</li>
+        <li><strong>Secure Authentication:</strong> Passwordless login using cryptographic keys protects your account without storing sensitive data.</li>
+        <li><strong>Minimal Metadata:</strong> We store only essential information (user IDs and public keys) to keep your privacy intact.</li>
+        <li><strong>Free Access:</strong> Doodler is completely free, making secure communication accessible to everyone.</li>
+      </ul>
+    </section>
+
+    <section id="help">
+      <h4>Help & Support</h4>
+      <p>
+        Need assistance with Doodler? We're here to help! Below are some common questions and resources to get you started:
+      </p>
+      <ul>
+        <li><strong>How do I sign up?</strong> Click the "Sign Up" button, enter your email and a strong passphrase, and Doodler will generate your secure keys.</li>
+        <li><strong>Forgot your passphrase?</strong> Unfortunately, passphrases are not stored for security reasons. Contact support for account recovery options.</li>
+        <li><strong>How does encryption work?</strong> Doodler uses OpenPGP for end-to-end encryption, ensuring only the recipient can read your messages.</li>
+        <li><strong>Having issues?</strong> Reach out to our support team at <a href="mailto:[email protected]">[email protected]</a> for assistance.</li>
+      </ul>
+      <p>
+        For more detailed guides, visit our <a href="mailto:[email protected]">Support Page</a> or check our FAQ section.
+      </p>
+    </section>
+  </div>
+
+  <!-- Messaging Interface (Hidden Initially) -->
+  <div id="messaging-content" style="display: none;">
+    <section id="chat-container">
+      <div class="contact-list">
+        <h3>Contacts</h3>
+        <ul id="contact-list"></ul>
+        <button id="add-contact">Add Contact</button>
+      </div>
+      <div class="chat-window">
+        <h3 id="chat-header">Select a contact to chat</h3>
+        <div id="chat-messages"></div>
+        <div class="chat-input">
+          <input type="text" id="message-input" placeholder="Type a message...">
+          <button id="send-message">Send</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Login Popup -->
+  <div class="login-popup" id="loginPopup">
+    <div class="login-box">
+      <h2>Login<span class="close">×</span></h2>
+      <form id="loginForm">
+        <div class="input-box">
+          <label for="login-email">Email:</label>
+          <input type="email" id="login-email" required>
+        </div>
+        <div class="input-box">
+          <label for="login-passphrase">Passphrase:</label>
+          <input type="password" id="login-passphrase" required>
+        </div>
+        <div class="remember-forget">
+          <label><input type="checkbox"> Remember me</label>
+        </div>
+        <button type="submit" class="login-button">Login</button>
+        <a href="mailto:[email protected]" class="forgot-password-link">Forgot Passphrase?</a>
+      </form>
+      <div class="google-icon">
+        <div class="gsi-material-button">
+          <img class="gsi-material-button-icon" src="https://www.google.com/favicon.ico" alt="Google Icon">
+          <span class="gsi-material-button-contents">Continue with Google</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Signup Popup -->
+  <div class="signup-popup" id="signupPopup">
+    <div class="signup-box">
+      <h2>Signup<span class="close">×</span></h2>
+      <form id="signupForm">
+        <div class="input-box">
+          <label for="signup-email">Email:</label>
+          <input type="email" id="signup-email" required>
+        </div>
+        <div class="input-box">
+          <label for="signup-passphrase">Passphrase:</label>
+          <input type="password" id="signup-passphrase" required>
+        </div>
+        <div class="input-box">
+          <label for="confirm-passphrase">Confirm Passphrase:</label>
+          <input type="password" id="confirm-passphrase" required>
+        </div>
+        <div id="passphraseError" class="error-message"></div>
+        <button type="submit" class="signup-button">Sign Up</button>
+      </form>
+      <p class="criteria-message">
+        Passphrase must contain 8-15 characters including a number, a lowercase and an uppercase alphabet, and a special character like !,@,#,%,^,&,*,(,), etc.
+      </p>
+    </div>
+  </div>
+
+  <footer>
+    <p>
+      Copyright © 2023 by Doodler<br>
+      No one except for Doodler is allowed to use the content of this page.<br>
+      For any further information, please contact: <a href="mailto:[email protected]">[email protected]</a>
+    </p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
