@@ -1,322 +1,241 @@
-document.addEventListener("DOMContentLoaded", function () {
-  // DOM Elements
-  const logoElement = document.querySelector(".Logo");
-  const homeLink = document.querySelector(".nav-link:nth-child(1)");
-  const aboutLink = document.querySelector(".nav-link:nth-child(2)");
-  const servicesLink = document.querySelector(".nav-link:nth-child(3)");
-  const helpLink = document.querySelector(".nav-link:nth-child(4)");
-  const loginButton = document.querySelector(".btnLogin-popup");
-  const signupButton = document.querySelector(".btnSignup-popup");
-  const loginPopup = document.getElementById("loginPopup");
-  const signupPopup = document.getElementById("signupPopup");
-  const closeLoginButton = document.querySelector(".login-popup .close");
-  const closeSignupButton = document.querySelector(".signup-popup .close");
-  const signupForm = document.getElementById("signupForm");
-  const loginForm = document.getElementById("loginForm");
-  const landingContent = document.getElementById("landing-content");
-  const messagingContent = document.getElementById("messaging-content");
-  const contactList = document.getElementById("contact-list");
-  const addContactButton = document.getElementById("add-contact");
-  const chatHeader = document.getElementById("chat-header");
-  const chatMessages = document.getElementById("chat-messages");
-  const messageInput = document.getElementById("message-input");
-  const sendMessageButton = document.getElementById("send-message");
+document.addEventListener("DOMContentLoaded", () => {
+  const logo = document.querySelector(".Logo"),
+        navLinks = document.querySelectorAll(".nav-link"),
+        loginBtn = document.querySelector(".btnLogin-popup"),
+        signupBtn = document.querySelector(".btnSignup-popup"),
+        loginPopup = document.getElementById("loginPopup"),
+        signupPopup = document.getElementById("signupPopup"),
+        closeModals = document.querySelectorAll(".close-modal-btn"),
+        signupForm = document.getElementById("signupForm"),
+        loginForm = document.getElementById("loginForm"),
+        menuToggle = document.querySelector(".menu-toggle"),
+        navLinksContainer = document.getElementById("nav-links"),
+        scrollTopBtn = document.getElementById("scroll-top"),
+        themeToggle = document.getElementById("theme-toggle"),
+        darkThemeLink = document.getElementById("dark-theme"),
+        aiChatToggle = document.getElementById("ai-chatbot-btn"),
+        aiChatWindow = document.getElementById("ai-chat-window"),
+        aiChatClose = document.getElementById("ai-chat-close-btn"),
+        aiChatInput = document.getElementById("ai-chat-input"),
+        aiChatSend = document.getElementById("ai-chat-send-btn"),
+        aiChatMessages = document.getElementById("ai-chat-messages");
 
-  // WebSocket Connection (Replace with your backend URL after deployment)
-  let ws = null;
-  const WS_URL = "ws://localhost:8080"; // Update to your deployed WebSocket URL
+  // Theme Management
+  const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const savedTheme = localStorage.getItem("theme") || (systemPrefersDark ? "dark" : "light");
 
-  // Current User and Chat State
-  let currentUser = null;
-  let currentChatContact = null;
-  let contacts = [];
+  function setTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+    darkThemeLink.disabled = theme !== "dark";
+    themeToggle.textContent = theme === "dark" ? "Light Mode☀️" : "Dark Mode🌙";
+    themeToggle.setAttribute("aria-pressed", theme === "dark");
+  }
 
-  // Navigation Functions
-  function goToHome() {
-    if (currentUser) {
-      landingContent.style.display = "none";
-      messagingContent.style.display = "block";
-    } else {
-      const homeSection = document.querySelector("#home");
-      if (homeSection) {
-        homeSection.scrollIntoView({ behavior: "smooth" });
+  setTheme(savedTheme);
+
+  themeToggle.addEventListener("click", () => {
+    const currentTheme = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    setTheme(currentTheme);
+  });
+
+  // Section Navigation
+  function showSection(id) {
+    document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+    document.querySelectorAll(".nav-link").forEach(l => l.classList.remove("active-link"));
+    const sec = document.querySelector(`#${id}`),
+          link = document.querySelector(`.nav-link[href='#${id}']`);
+    if (sec && link) {
+      sec.classList.add("active");
+      link.classList.add("active-link");
+      sec.scrollIntoView({ behavior: "smooth" });
+    }
+    if (navLinksContainer.classList.contains("active")) {
+      navLinksContainer.classList.remove("active");
+      menuToggle.classList.remove("active");
+      menuToggle.setAttribute("aria-expanded", "false");
+    }
+  }
+
+  [logo, ...navLinks].forEach(el => {
+    el.addEventListener("click", e => {
+      e.preventDefault();
+      showSection(e.target.getAttribute("href")?.substring(1) || "home");
+    });
+  });
+
+  menuToggle.addEventListener("click", () => {
+    navLinksContainer.classList.toggle("active");
+    menuToggle.classList.toggle("active");
+    menuToggle.setAttribute("aria-expanded", navLinksContainer.classList.contains("active"));
+  });
+
+  // Modal Management
+  function toggleModal(id, show) {
+    const modal = document.getElementById(id);
+    if (modal) {
+      if (show) {
+        modal.showModal();
+        modal.querySelector("input").focus();
+      } else {
+        modal.close();
       }
+      document.body.classList[show ? "add" : "remove"](`${id}-blur`);
     }
   }
 
-  logoElement.addEventListener("click", goToHome);
-  homeLink.addEventListener("click", goToHome);
+  [loginBtn, signupBtn].forEach(btn => {
+    btn.addEventListener("click", () => {
+      const target = btn.classList.contains("btnLogin-popup") ? "loginPopup" : "signupPopup";
+      toggleModal(target, true);
+    });
+  });
 
-  aboutLink.addEventListener("click", function (e) {
+  closeModals.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const modal = btn.closest("dialog");
+      if (modal) toggleModal(modal.id, false);
+    });
+  });
+
+  // Close modals on backdrop click
+  [loginPopup, signupPopup].forEach(modal => {
+    modal.addEventListener("click", e => {
+      if (e.target === modal) toggleModal(modal.id, false);
+    });
+  });
+
+  // Password Toggle
+  document.querySelectorAll(".toggle-password").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const input = e.target.previousElementSibling;
+      input.type = input.type === "password" ? "text" : "password";
+      btn.textContent = input.type === "password" ? "👁️" : "🙈";
+      btn.setAttribute("aria-label", input.type === "password" ? "Show password" : "Hide password");
+    });
+  });
+
+  // Scroll-to-Top
+  window.addEventListener("scroll", () => {
+    scrollTopBtn.classList.toggle("show", window.scrollY > 300);
+  });
+
+  scrollTopBtn.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  // Form Validation and Submission
+  const validatePass = p =>
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$/.test(p);
+
+  signupForm.addEventListener("submit", async e => {
     e.preventDefault();
-    const aboutSection = document.querySelector("#about");
-    if (aboutSection) {
-      aboutSection.scrollIntoView({ behavior: "smooth" });
-    }
-  });
+    const email = signupForm.querySelector("#signup-email").value.trim(),
+          p1 = signupForm.querySelector("#signup-passphrase").value,
+          p2 = signupForm.querySelector("#confirm-passphrase").value,
+          err = signupForm.querySelector(".criteria-message");
 
-  servicesLink.addEventListener("click", function (e) {
-    e.preventDefault();
-    const servicesSection = document.querySelector("#services");
-    if (servicesSection) {
-      servicesSection.scrollIntoView({ behavior: "smooth" });
-    }
-  });
+    if (p1 !== p2) return (err.textContent = "Passphrases do not match.");
+    if (!validatePass(p1)) return (err.textContent = "8–15 chars, number, lowercase, uppercase, special char required.");
 
-  helpLink.addEventListener("click", function (e) {
-    e.preventDefault();
-    const helpSection = document.querySelector("#help");
-    if (helpSection) {
-      helpSection.scrollIntoView({ behavior: "smooth" });
-    }
-  });
-
-  // Popup Handlers
-  loginButton.addEventListener("click", function () {
-    loginPopup.style.display = "block";
-    document.body.classList.add("login-blur");
-  });
-
-  signupButton.addEventListener("click", function () {
-    signupPopup.style.display = "block";
-    document.body.classList.add("signup-blur");
-  });
-
-  closeLoginButton.addEventListener("click", function () {
-    loginPopup.style.display = "none";
-    document.body.classList.remove("login-blur");
-  });
-
-  closeSignupButton.addEventListener("click", function () {
-    signupPopup.style.display = "none";
-    document.body.classList.remove("signup-blur");
-  });
-
-  window.addEventListener("click", function (event) {
-    if (event.target === loginPopup) {
-      loginPopup.style.display = "none";
-      document.body.classList.remove("login-blur");
-    }
-    if (event.target === signupPopup) {
-      signupPopup.style.display = "none";
-      document.body.classList.remove("signup-blur");
-    }
-  });
-
-  // Passphrase Validation
-  function validatePassphrase(passphrase) {
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$/;
-    return regex.test(passphrase);
-  }
-
-  // Signup Handler
-  signupForm.addEventListener("submit", async function (event) {
-    event.preventDefault();
-    const email = document.getElementById("signup-email").value;
-    const passphrase = document.getElementById("signup-passphrase").value;
-    const confirmPassphrase = document.getElementById("confirm-passphrase").value;
-    const passphraseError = document.getElementById("passphraseError");
-
-    if (passphrase !== confirmPassphrase) {
-      passphraseError.textContent = "Passphrases do not match.";
-      return;
-    }
-
-    if (!validatePassphrase(passphrase)) {
-      passphraseError.textContent = "Passphrase must be 8-15 characters with a number, lowercase, uppercase, and special character.";
-      return;
-    }
-
-    // Generate Key Pair
     try {
       const { privateKey, publicKey } = await openpgp.generateKey({
         type: "rsa",
         rsaBits: 2048,
         userIDs: [{ email }],
-        passphrase,
+        passphrase: p1
       });
 
-      // Store private key locally (encrypted with passphrase)
-      localStorage.setItem(`privateKey_${email}`, privateKey);
-      // Send public key to server
-      await fetch("http://localhost:3000/register", {
+      const response = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, publicKey }),
+        body: JSON.stringify({ email, publicKey })
       });
+
+      if (!response.ok) throw new Error("Signup failed");
 
       alert("Signup successful! Please login.");
-      signupPopup.style.display = "none";
-      document.body.classList.remove("signup-blur");
-    } catch (error) {
-      passphraseError.textContent = "Error during signup. Try again.";
-      console.error(error);
+      toggleModal("signupPopup", false);
+    } catch {
+      err.textContent = "Error during signup. Try again.";
     }
   });
 
-  // Login Handler
-  loginForm.addEventListener("submit", async function (event) {
-    event.preventDefault();
-    const email = document.getElementById("login-email").value;
-    const passphrase = document.getElementById("login-passphrase").value;
-
+  loginForm.addEventListener("submit", async e => {
+    e.preventDefault();
+    const email = loginForm.querySelector("#login-email").value.trim(),
+          passphrase = loginForm.querySelector("#login-passphrase").value;
     try {
-      // Retrieve and decrypt private key
-      const privateKeyArmored = localStorage.getItem(`privateKey_${email}`);
-      if (!privateKeyArmored) {
-        alert("No account found. Please sign up.");
-        return;
-      }
-
-      const privateKey = await openpgp.readPrivateKey({ armoredKey: privateKeyArmored });
-      await openpgp.decryptKey({
-        privateKey: privateKey,
-        passphrase,
-      });
-
-      // Initialize WebSocket
-      ws = new WebSocket(WS_URL);
-      ws.onopen = async () => {
-        // Authenticate with server
-        ws.send(JSON.stringify({ type: "auth", email }));
-        currentUser = email;
-        landingContent.style.display = "none";
-        messagingContent.style.display = "block";
-        loginPopup.style.display = "none";
-        document.body.classList.remove("login-blur");
-        await fetchContacts();
-      };
-
-      ws.onmessage = handleWebSocketMessage;
-      ws.onclose = () => {
-        alert("Connection lost. Please reload.");
-      };
-    } catch (error) {
-      alert("Invalid passphrase or email.");
-      console.error(error);
+      const privateKey = await openpgp.readPrivateKey({ armoredKey: "placeholder" });
+      await openpgp.decryptKey({ privateKey, passphrase });
+      alert("Login successful!");
+      window.location.href = "chat.html";
+    } catch {
+      alert("Invalid email or passphrase.");
     }
   });
 
-  // Fetch Contacts
-  async function fetchContacts() {
-    try {
-      const response = await fetch("http://localhost:3000/users");
-      contacts = await response.json();
-      contactList.innerHTML = "";
-      contacts.forEach(contact => {
-        if (contact.email !== currentUser) {
-          const li = document.createElement("li");
-          li.textContent = contact.email;
-          li.addEventListener("click", () => selectContact(contact));
-          contactList.appendChild(li);
-        }
-      });
-    } catch (error) {
-      console.error("Error fetching contacts:", error);
+  // AI Chat Logic
+  const aiResponses = {
+    "what is doodler": "Doodler is a secure messaging platform with end-to-end encryption.",
+    "how to sign up": "Click 'Sign Up', enter email and a strong passphrase.",
+    "how does encryption work": "Uses OpenPGP for end-to-end encryption.",
+    "contact support": "Email support@doodler.com.",
+    default: "Ask about features, signup, encryption, or support!"
+  };
+
+  function addMessage(text, type) {
+    const msg = document.createElement("div");
+    msg.classList.add("message", `${type}-message`);
+    // Sanitize input if DOMPurify is available, otherwise use textContent directly
+    if (typeof DOMPurify !== "undefined") {
+      msg.innerHTML = DOMPurify.sanitize(text);
+    } else {
+      console.warn("DOMPurify not loaded; using textContent for safety.");
+      msg.textContent = text;
     }
+    aiChatMessages.appendChild(msg);
+    aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
   }
 
-  // Select Contact
-  function selectContact(contact) {
-    currentChatContact = contact;
-    chatHeader.textContent = `Chatting with ${contact.email}`;
-    chatMessages.innerHTML = "";
-    document.querySelectorAll(".contact-list li").forEach(li => li.classList.remove("active"));
-    event.target.classList.add("active");
-  }
-
-  // Add Contact
-  addContactButton.addEventListener("click", async () => {
-    const email = prompt("Enter contact email:");
-    if (email && email !== currentUser) {
-      try {
-        const response = await fetch(`http://localhost:3000/user/${email}`);
-        const contact = await response.json();
-        if (contact) {
-          contacts.push(contact);
-          const li = document.createElement("li");
-          li.textContent = contact.email;
-          li.addEventListener("click", () => selectContact(contact));
-          contactList.appendChild(li);
-        } else {
-          alert("User not found.");
-        }
-      } catch (error) {
-        alert("Error adding contact.");
-        console.error(error);
-      }
+  aiChatToggle.addEventListener("click", () => {
+    aiChatWindow.classList.toggle("active");
+    document.body.classList.toggle("ai-chat-active");
+    if (aiChatWindow.classList.contains("active") && aiChatMessages.children.length === 0) {
+      addMessage("Hi! I'm Doodler Assistant. Ask about encryption or account help.", "ai");
+    }
+    if (aiChatWindow.classList.contains("active")) {
+      aiChatInput.focus();
     }
   });
 
-  // Send Message
-  sendMessageButton.addEventListener("click", async () => {
-    if (!currentChatContact) {
-      alert("Select a contact to chat.");
-      return;
-    }
+  aiChatClose.addEventListener("click", () => {
+    aiChatWindow.classList.remove("active");
+    document.body.classList.remove("ai-chat-active");
+  });
 
-    const message = messageInput.value.trim();
-    if (!message) return;
+  aiChatSend.addEventListener("click", () => {
+    const input = aiChatInput.value.trim().toLowerCase();
+    if (!input) return;
+    addMessage(input, "user");
+    setTimeout(() => {
+      const match = Object.keys(aiResponses).find(k => input.includes(k)) || "default";
+      addMessage(aiResponses[match], "ai");
+    }, 500);
+    aiChatInput.value = "";
+  });
 
-    try {
-      // Encrypt Message
-      const publicKey = await openpgp.readKey({ armoredKey: currentChatContact.publicKey });
-      const encrypted = await openpgp.encrypt({
-        message: await openpgp.createMessage({ text: message }),
-        encryptionKeys: publicKey,
-      });
-
-      // Send via WebSocket
-      ws.send(JSON.stringify({
-        type: "message",
-        to: currentChatContact.email,
-        from: currentUser,
-        encrypted,
-      }));
-
-      // Display Sent Message
-      const messageElement = document.createElement("div");
-      messageElement.classList.add("message", "sent");
-      messageElement.textContent = message;
-      chatMessages.appendChild(messageElement);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-      messageInput.value = "";
-    } catch (error) {
-      alert("Error sending message.");
-      console.error(error);
+  aiChatInput.addEventListener("keypress", e => {
+    if (e.key === "Enter" && aiChatInput.value.trim()) {
+      aiChatSend.click();
     }
   });
 
-  // Handle WebSocket Messages
-  async function handleWebSocketMessage(event) {
-    const data = JSON.parse(event.data);
-    if (data.type === "message" && data.to === currentUser) {
-      try {
-        // Decrypt Message
-        const privateKeyArmored = localStorage.getItem(`privateKey_${currentUser}`);
-        const privateKey = await openpgp.readPrivateKey({ armoredKey: privateKeyArmored });
-        const decryptedKey = await openpgp.decryptKey({
-          privateKey,
-          passphrase: document.getElementById("login-passphrase").value, // Assumes passphrase is still in input
-        });
-
-        const message = await openpgp.readMessage({ armoredMessage: data.encrypted });
-        const { data: decrypted } = await openpgp.decrypt({
-          message,
-          decryptionKeys: decryptedKey,
-        });
-
-        // Display Received Message
-        if (data.from === currentChatContact?.email) {
-          const messageElement = document.createElement("div");
-          messageElement.classList.add("message", "received");
-          messageElement.textContent = decrypted;
-          chatMessages.appendChild(messageElement);
-          chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-      } catch (error) {
-        console.error("Error decrypting message:", error);
-      }
-    }
-  }
+  showSection("home");
 });
+
+// Load DOMPurify for sanitizing AI chat input
+const script = document.createElement("script");
+script.src = "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js";
+script.async = true;
+document.head.appendChild(script);
