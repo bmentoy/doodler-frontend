@@ -1,0 +1,172 @@
+[data-theme="dark"] {
+  --bg-color: #0e1117;
+  --text-color: #d1d5db;
+  --card-bg-color: #161b22;
+  --primary-color: #3b82f6;
+  --primary-color-rgb: 59, 130, 246;
+  --secondary-color: #1d4ed8;
+  --accent-color: #10b981;
+  --accent-color-darker: #047857;
+  --text-color-light: #f9fafb;
+  --border-color: #2f3a4e;
+  --shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  --shadow-strong: 0 12px 20px rgba(0, 0, 0, 0.7);
+  --border-radius: 25px; /* Match light theme */
+}
+
+[data-theme="dark"] body {
+  background: linear-gradient(135deg, #0e1117, #1a1f2b);
+  color: var(--text-color);
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+[data-theme="dark"] body::before {
+  background: linear-gradient(135deg, #0e1117, #1a1f2b);
+  transition: opacity 0.5s ease;
+}
+
+[data-theme="dark"] header,
+[data-theme="dark"] footer,
+[data-theme="dark"] .modal-content,
+[data-theme="dark"] .main-nav,
+[data-theme="dark"] .nav-content,
+[data-theme="dark"] .card,
+[data-theme="dark"] .section {
+  background-color: var(--card-bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease;
+  border-radius: var(--border-radius);
+}
+
+[data-theme="dark"] header {
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
+}
+
+[data-theme="dark"] footer {
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+[data-theme="dark"] .section.transparent {
+  background-color: var(--card-bg-color);
+  box-shadow: var(--shadow);
+}
+
+[data-theme="dark"] .section.transparent h2,
+[data-theme="dark"] .section.transparent p,
+[data-theme="dark"] .section.transparent li,
+[data-theme="dark"] .section.transparent strong,
+[data-theme="dark"] .section.transparent a {
+  text-shadow: none;
+  color: var(--text-color-light);
+}
+
+[data-theme="dark"] a,
+[data-theme="dark"] .Logo,
+[data-theme="dark"] .nav-link,
+[data-theme="dark"] .btnLogin-popup,
+[data-theme="dark"] .btnSignup-popup {
+  color: var(--text-color-light);
+  border-radius: 50px;
+}
+
+[data-theme="dark"] .nav-link:hover,
+[data-theme="dark"] .btnLogin-popup:hover,
+[data-theme="dark"] .btnSignup-popup:hover {
+  background-color: var(--accent-color);
+  color: var(--bg-color);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+[data-theme="dark"] .nav-link.active-link {
+  background-color: var(--accent-color-darker);
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] textarea {
+  background: var(--bg-color);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: 50px; /* Pill-shaped */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+[data-theme="dark"] input:focus,
+[data-theme="dark"] textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.2);
+}
+
+[data-theme="dark"] .login-button,
+[data-theme="dark"] .signup-button,
+[data-theme="dark"] #scroll-top,
+[data-theme="dark"] #ai-chat-send-btn,
+[data-theme="dark"] #ai-chatbot-btn {
+  background: var(--accent-color);
+  color: var(--bg-color);
+  border-radius: 50px; /* Pill-shaped */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+[data-theme="dark"] .login-button:hover,
+[data-theme="dark"] .signup-button:hover,
+[data-theme="dark"] #scroll-top:hover,
+[data-theme="dark"] #ai-chat-send-btn:hover,
+[data-theme="dark"] #ai-chatbot-btn:hover {
+  background: var(--accent-color-darker);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+[data-theme="dark"] .modal-content h3 {
+  background: var(--primary-color);
+  color: var(--text-color-light);
+  padding: 10px 25px;
+  border-radius: 25px;
+  margin: 0 auto 20px;
+  text-align: center;
+  display: inline-block;
+}
+
+[data-theme="dark"] .close-modal-btn {
+  font-size: 1.5rem; /* Larger cross button */
+}
+
+[data-theme="dark"] .ai-chat-window {
+  background-color: var(--card-bg-color);
+  border-color: var(--border-color);
+  border-radius: 30px; /* Pill-shaped */
+  transition: background-color 0.3s ease;
+}
+
+[data-theme="dark"] .ai-chat-header {
+  background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+  color: var(--text-color-light);
+  border-radius: 30px 30px 0 0;
+}
+
+[data-theme="dark"] .ai-chat-messages .user-message {
+  background: var(--accent-color);
+  color: var(--bg-color);
+  border-radius: 20px; /* Pill-shaped */
+}
+
+[data-theme="dark"] .ai-chat-messages .ai-message {
+  background: var(--border-color);
+  color: var(--text-color);
+  border-radius: 20px; /* Pill-shaped */
+}
+
+[data-theme="dark"] .site-footer a {
+  color: var(--accent-color);
+  border-radius: 15px;
+}
+
+[data-theme="dark"] .site-footer a:hover {
+  color: var(--accent-color-darker);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="dark"] * {
+    transition: none;
+  }
+}
