@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const logo = document.querySelector(".Logo"),
+  const logo = document.querySelector("#logo-link"),
         navLinks = document.querySelectorAll(".nav-link"),
         loginBtn = document.querySelector(".btnLogin-popup"),
         signupBtn = document.querySelector(".btnSignup-popup"),
@@ -11,45 +11,46 @@ document.addEventListener("DOMContentLoaded", () => {
         menuToggle = document.querySelector(".menu-toggle"),
         navLinksContainer = document.getElementById("nav-links"),
         scrollTopBtn = document.getElementById("scroll-top"),
-        themeToggle = document.getElementById("theme-toggle"),
-        darkThemeLink = document.getElementById("dark-theme"),
-        aiChatToggle = document.getElementById("ai-chatbot-btn"),
-        aiChatWindow = document.getElementById("ai-chat-window"),
-        aiChatClose = document.getElementById("ai-chat-close-btn"),
-        aiChatInput = document.getElementById("ai-chat-input"),
-        aiChatSend = document.getElementById("ai-chat-send-btn"),
-        aiChatMessages = document.getElementById("ai-chat-messages");
+        ctaButtons = document.querySelectorAll(".cta-button"),
+        chatbotBtn = document.getElementById("ai-chatbot-btn"),
+        chatbotWindow = document.querySelector(".ai-chat-window"),
+        chatInput = document.getElementById("ai-chat-input"),
+        chatSendBtn = document.getElementById("ai-chat-send-btn"),
+        chatMessages = document.querySelector(".ai-chat-messages");
 
-  // Theme Management
-  const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const savedTheme = localStorage.getItem("theme") || (systemPrefersDark ? "dark" : "light");
-
-  function setTheme(theme) {
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("theme", theme);
-    darkThemeLink.disabled = theme !== "dark";
-    themeToggle.textContent = theme === "dark" ? "Light Mode☀️" : "Dark Mode🌙";
-    themeToggle.setAttribute("aria-pressed", theme === "dark");
-  }
-
-  setTheme(savedTheme);
+  // Theme Toggle
+  const themeToggle = document.getElementById("theme-toggle");
+  const lightThemeLink = document.getElementById("light-theme");
+  const darkThemeLink = document.getElementById("dark-theme");
+  let isDarkMode = false;
 
   themeToggle.addEventListener("click", () => {
-    const currentTheme = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
-    setTheme(currentTheme);
+    isDarkMode = !isDarkMode;
+    document.documentElement.setAttribute("data-theme", isDarkMode ? "dark" : "light");
+    lightThemeLink.disabled = isDarkMode;
+    darkThemeLink.disabled = !isDarkMode;
+    themeToggle.textContent = isDarkMode ? "☀️" : "🌙";
+    themeToggle.setAttribute("aria-label", isDarkMode ? "Toggle Light Mode" : "Toggle Dark Mode");
   });
 
   // Section Navigation
   function showSection(id) {
-    document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+    document.querySelectorAll(".section").forEach(s => {
+      s.classList.remove("active");
+      s.classList.remove("fade-in");
+    });
+
     document.querySelectorAll(".nav-link").forEach(l => l.classList.remove("active-link"));
-    const sec = document.querySelector(`#${id}`),
-          link = document.querySelector(`.nav-link[href='#${id}']`);
+    const sec = document.querySelector(`#${id}`);
+    const link = document.querySelector(`.nav-link[href='#${id}']`);
+    
     if (sec && link) {
       sec.classList.add("active");
+      sec.classList.add("fade-in");
       link.classList.add("active-link");
       sec.scrollIntoView({ behavior: "smooth" });
     }
+
     if (navLinksContainer.classList.contains("active")) {
       navLinksContainer.classList.remove("active");
       menuToggle.classList.remove("active");
@@ -57,10 +58,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  [logo, ...navLinks].forEach(el => {
-    el.addEventListener("click", e => {
+  logo.addEventListener("click", e => {
+    e.preventDefault();
+    showSection("home");
+  });
+
+  navLinks.forEach(link => {
+    link.addEventListener("click", e => {
       e.preventDefault();
-      showSection(e.target.getAttribute("href")?.substring(1) || "home");
+      showSection(e.target.getAttribute("href").substring(1));
     });
   });
 
@@ -70,6 +76,28 @@ document.addEventListener("DOMContentLoaded", () => {
     menuToggle.setAttribute("aria-expanded", navLinksContainer.classList.contains("active"));
   });
 
+  // Fade Navbar on Scroll Down/Up
+  let lastScrollY = window.scrollY;
+  const navbar = document.querySelector("header"); // assuming header is the nav container
+
+  window.addEventListener("scroll", () => {
+    const currentScrollY = window.scrollY;
+    if (currentScrollY > lastScrollY && currentScrollY > 50) {
+      navbar.classList.add("fade-out");
+      navbar.classList.remove("fade-in");
+    } else {
+      navbar.classList.add("fade-in");
+      navbar.classList.remove("fade-out");
+    }
+    lastScrollY = currentScrollY;
+
+    scrollTopBtn.classList.toggle("show", window.scrollY > 300);
+  });
+
+  scrollTopBtn.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
   // Modal Management
   function toggleModal(id, show) {
     const modal = document.getElementById(id);
@@ -77,10 +105,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (show) {
         modal.showModal();
         modal.querySelector("input").focus();
+        document.body.classList.add(`${id}-blur`);
       } else {
         modal.close();
+        document.body.classList.remove(`${id}-blur`);
       }
-      document.body.classList[show ? "add" : "remove"](`${id}-blur`);
     }
   }
 
@@ -91,6 +120,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  ctaButtons.forEach(btn => {
+    btn.addEventListener("click", e => {
+      e.preventDefault();
+      toggleModal("signupPopup", true);
+    });
+  });
+
   closeModals.forEach(btn => {
     btn.addEventListener("click", () => {
       const modal = btn.closest("dialog");
@@ -98,7 +134,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Close modals on backdrop click
   [loginPopup, signupPopup].forEach(modal => {
     modal.addEventListener("click", e => {
       if (e.target === modal) toggleModal(modal.id, false);
@@ -107,38 +142,48 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Password Toggle
   document.querySelectorAll(".toggle-password").forEach(btn => {
-    btn.addEventListener("click", (e) => {
-      const input = e.target.previousElementSibling;
+    btn.addEventListener("click", e => {
+      const container = e.target.closest(".password-wrapper");
+      const input = container.querySelector("input");
       input.type = input.type === "password" ? "text" : "password";
       btn.textContent = input.type === "password" ? "👁️" : "🙈";
       btn.setAttribute("aria-label", input.type === "password" ? "Show password" : "Hide password");
     });
   });
 
-  // Scroll-to-Top
-  window.addEventListener("scroll", () => {
-    scrollTopBtn.classList.toggle("show", window.scrollY > 300);
-  });
-
-  scrollTopBtn.addEventListener("click", () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  });
-
-  // Form Validation and Submission
-  const validatePass = p =>
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$/.test(p);
-
+  // Signup Logic
   signupForm.addEventListener("submit", async e => {
     e.preventDefault();
-    const email = signupForm.querySelector("#signup-email").value.trim(),
-          p1 = signupForm.querySelector("#signup-passphrase").value,
-          p2 = signupForm.querySelector("#confirm-passphrase").value,
-          err = signupForm.querySelector(".criteria-message");
+    const submitBtn = signupForm.querySelector(".signup-button");
+    const email = signupForm.querySelector("#signup-email").value.trim();
+    const p1 = signupForm.querySelector("#signup-passphrase").value;
+    const p2 = signupForm.querySelector("#confirm-passphrase").value;
+    const err = signupForm.querySelector(".criteria-message");
 
-    if (p1 !== p2) return (err.textContent = "Passphrases do not match.");
-    if (!validatePass(p1)) return (err.textContent = "8–15 chars, number, lowercase, uppercase, special char required.");
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Signing up...";
+
+    if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      err.textContent = "Invalid email format.";
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Sign Up";
+      return;
+    }
+    if (p1 !== p2) {
+      err.textContent = "Passphrases do not match.";
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Sign Up";
+      return;
+    }
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$/.test(p1)) {
+      err.textContent = "8–15 chars, number, lowercase, uppercase, special char required.";
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Sign Up";
+      return;
+    }
 
     try {
+      if (typeof openpgp === "undefined") throw new Error("Encryption library not loaded");
       const { privateKey, publicKey } = await openpgp.generateKey({
         type: "rsa",
         rsaBits: 2048,
@@ -152,90 +197,66 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({ email, publicKey })
       });
 
-      if (!response.ok) throw new Error("Signup failed");
-
+      if (!response.ok) throw new Error(`Signup failed: ${response.statusText}`);
       alert("Signup successful! Please login.");
       toggleModal("signupPopup", false);
-    } catch {
-      err.textContent = "Error during signup. Try again.";
+    } catch (error) {
+      err.textContent = `Error: ${error.message || "Signup failed. Try again."}`;
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Sign Up";
     }
   });
 
+  // Login Logic
   loginForm.addEventListener("submit", async e => {
     e.preventDefault();
-    const email = loginForm.querySelector("#login-email").value.trim(),
-          passphrase = loginForm.querySelector("#login-passphrase").value;
+    const submitBtn = loginForm.querySelector(".login-button");
+    const email = loginForm.querySelector("#login-email").value.trim();
+    const passphrase = loginForm.querySelector("#login-passphrase").value;
+    const err = loginForm.querySelector(".criteria-message");
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Logging in...";
+
+    if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      err.textContent = "Invalid email format.";
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Login";
+      return;
+    }
+
     try {
-      const privateKey = await openpgp.readPrivateKey({ armoredKey: "placeholder" });
+      if (typeof openpgp === "undefined") throw new Error("Encryption library not loaded");
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+      });
+
+      if (!res.ok) throw new Error("Invalid credentials");
+
+      const { encryptedPrivateKey } = await res.json();
+      const privateKey = await openpgp.readPrivateKey({ armoredKey: encryptedPrivateKey });
       await openpgp.decryptKey({ privateKey, passphrase });
+
       alert("Login successful!");
       window.location.href = "chat.html";
-    } catch {
-      alert("Invalid email or passphrase.");
+    } catch (error) {
+      err.textContent = `Error: ${error.message || "Login failed. Try again."}`;
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Login";
     }
   });
 
-  // AI Chat Logic
-  const aiResponses = {
-    "what is doodler": "Doodler is a secure messaging platform with end-to-end encryption.",
-    "how to sign up": "Click 'Sign Up', enter email and a strong passphrase.",
-    "how does encryption work": "Uses OpenPGP for end-to-end encryption.",
-    "contact support": "Email support@doodler.com.",
-    default: "Ask about features, signup, encryption, or support!"
-  };
-
-  function addMessage(text, type) {
-    const msg = document.createElement("div");
-    msg.classList.add("message", `${type}-message`);
-    // Sanitize input if DOMPurify is available, otherwise use textContent directly
-    if (typeof DOMPurify !== "undefined") {
-      msg.innerHTML = DOMPurify.sanitize(text);
-    } else {
-      console.warn("DOMPurify not loaded; using textContent for safety.");
-      msg.textContent = text;
-    }
-    aiChatMessages.appendChild(msg);
-    aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
-  }
-
-  aiChatToggle.addEventListener("click", () => {
-    aiChatWindow.classList.toggle("active");
-    document.body.classList.toggle("ai-chat-active");
-    if (aiChatWindow.classList.contains("active") && aiChatMessages.children.length === 0) {
-      addMessage("Hi! I'm Doodler Assistant. Ask about encryption or account help.", "ai");
-    }
-    if (aiChatWindow.classList.contains("active")) {
-      aiChatInput.focus();
-    }
+  // Google Auth (Placeholder)
+  document.querySelectorAll(".signup-google, .login-google").forEach(btn => {
+    btn.addEventListener("click", () => {
+      alert("Google login not yet implemented.");
+    });
   });
 
-  aiChatClose.addEventListener("click", () => {
-    aiChatWindow.classList.remove("active");
-    document.body.classList.remove("ai-chat-active");
-  });
-
-  aiChatSend.addEventListener("click", () => {
-    const input = aiChatInput.value.trim().toLowerCase();
-    if (!input) return;
-    addMessage(input, "user");
-    setTimeout(() => {
-      const match = Object.keys(aiResponses).find(k => input.includes(k)) || "default";
-      addMessage(aiResponses[match], "ai");
-    }, 500);
-    aiChatInput.value = "";
-  });
-
-  aiChatInput.addEventListener("keypress", e => {
-    if (e.key === "Enter" && aiChatInput.value.trim()) {
-      aiChatSend.click();
-    }
-  });
-
+  // Default Section Load
   showSection("home");
 });
-
-// Load DOMPurify for sanitizing AI chat input
-const script = document.createElement("script");
-script.src = "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js";
-script.async = true;
-document.head.appendChild(script);
