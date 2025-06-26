@@ -1,171 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
-  <title>Doodler-Free Secure Messaging Service</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+   <title>Doodler-Free & Secure Messaging </title>
   <link rel="icon" type="image/png" href="assets/images/logo.png">
-  <link rel="stylesheet" href="style.css">
-  <link id="dark-theme" rel="stylesheet" href="dark-mode.css" disabled>
+
+  <!-- ✅ Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-M9...==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- ✅ Stylesheets -->
+ <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="dark-mode.css">
+
+  <!-- ✅ External Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/openpgp@5.11.2/dist/openpgp.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
 </head>
-<body>
+<body class="light-mode">
   <header>
-    <div class="container">
-      <h1 class="Logo">
-  <img src="assets/images/doodler-logo.png" alt="Doodler Logo" class="header-logo">
-</h1>
-      <div class="header-controls">
-        <button id="theme-toggle" aria-pressed="false">Dark Mode🌙</button>
-        <button class="menu-toggle" aria-label="Toggle navigation menu">
-          <div class="icon-bars">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-        </button>
+    <nav class="navbar">
+      <a href="index.html" id="logo-link" class="logo">Doodler</a>
+      <ul class="nav-links" id="nav-links">
+        <li><a class="nav-link" href="#home">Home</a></li>
+        <li><a class="nav-link" href="#about">About</a></li>
+        <li><a class="nav-link" href="#services">Services</a></li>
+        <li><a class="nav-link" href="#help">Help</a></li>
+      </ul>
+      <div class="nav-buttons">
+        <button id="loginBtn" class="btnLogin-popup pill">Login</button>
+        <button id="signupBtn" class="btnSignup-popup pill">Sign Up</button>
+        <button id="theme-toggle" class="pill" aria-label="Toggle Dark Mode">Dark Mode🌙</button>
       </div>
-      <nav class="main-nav">
-        <div class="nav-content">
-          <ul id="nav-links">
-            <li><a href="#home" class="nav-link active-link">Home</a></li>
-            <li><a href="#about" class="nav-link">About</a></li>
-            <li><a href="#services" class="nav-link">Services</a></li>
-            <li><a href="#help" class="nav-link">Help</a></li>
-            <li><button class="btnLogin-popup">Login</button></li>
-            <li><button class="btnSignup-popup">Sign Up</button></li>
-          </ul>
-        </div>
-      </nav>
-    </div>
+    </nav>
+    <button class="menu-toggle" aria-label="Toggle Navigation" aria-expanded="false">☰</button>
   </header>
 
-  <main>
-    <section id="home" class="section active transparent">
-      <div class="container">
-        <h2>Welcome to Doodler</h2>
-      <p>Doodler is a passion project created to provide a free, secure, and user-friendly messaging service. </br>
-        Our mission is to ensure that anyone can communicate with their friends, family, or colleagues without worrying about prying eyes.</br>
-         Using state-of-the-art end-to-end encryption, Doodler guarantees that your messages remain confidential, with no access by third parties, including us. </br>
-        Whether you're sharing personal updates or sensitive information, Doodler is your trusted platform for private communication.</p>  
+  <main class="container">
+    <section id="home" class="section active">
+      <div class="hero-card">
+        <img src="assets/images/doodler-logo.png" alt="Doodler Logo" class="hero-logo" />
+        <h1>Welcome to <span class="highlight">Doodler</span></h1>
+        <p class="hero-text">A secure, free, and user-friendly messaging platform built with your privacy in mind.</p>
+        <div class="features-grid">
+          <div class="feature-item"><i class="fas fa-lock"></i> End-to-End Encryption</div>
+          <div class="feature-item"><i class="fas fa-bolt"></i> Real-Time Messaging</div>
+          <div class="feature-item"><i class="fas fa-user-shield"></i> Minimal Metadata</div>
+        </div>
+        <a href="#" class="cta-button btnSignup-popup">Get Started</a>
       </div>
     </section>
 
-    <section id="about" class="section transparent">
-      <div class="container">
+    <section id="about" class="section">
+      <div class="content-card">
         <h2>About Doodler</h2>
-        <p>Doodler is a passion project providing a free, secure, user-friendly messaging service with end-to-end encryption, ensuring confidentiality without third-party access.</p>
+        <p>Doodler is a passion project dedicated to secure communication. Our platform ensures your messages are protected with end-to-end encryption, keeping your conversations private and safe from third-party access.</p>
+        <p>Join us in our mission to make privacy-first messaging accessible to everyone.</p>
       </div>
     </section>
 
-    <section id="services" class="section transparent">
-      <div class="container">
+    <section id="services" class="section">
+      <div class="content-card">
         <h2>Our Services</h2>
-        <ul>
-          <li><strong>End-to-End Encryption:</strong> Messages encrypted on your device, decryptable only by the recipient.</li>
-          <li><strong>Real-Time Messaging:</strong> Instant communication via WebSocket.</li>
-          <li><strong>Secure Authentication:</strong> Passwordless login with cryptographic keys.</li>
-          <li><strong>Minimal Metadata:</strong> Only user IDs and public keys stored.</li>
-          <li><strong>Free Access:</strong> Secure communication for everyone.</li>
+        <ul class="services-list">
+          <li><i class="fas fa-check"></i> End-to-End Encryption</li>
+          <li><i class="fas fa-check"></i> Real-Time Messaging via WebSocket</li>
+          <li><i class="fas fa-check"></i> Secure Authentication with Cryptographic Keys</li>
+          <li><i class="fas fa-check"></i> Minimal Metadata Storage</li>
+          <li><i class="fas fa-check"></i> Free Access for All</li>
         </ul>
       </div>
     </section>
 
-    <section id="help" class="section transparent">
-      <div class="container">
+    <section id="help" class="section">
+      <div class="content-card">
         <h2>Help & Support</h2>
-        <ul>
-          <li><strong>How do I sign up?</strong> Click "Sign Up", enter email and a strong passphrase.</li>
-          <li><strong>Forgot passphrase?</strong> Contact support at <a href="mailto:support@doodler.com">support@doodler.com</a>.</li>
-          <li><strong>How does encryption work?</strong> Uses OpenPGP for end-to-end encryption.</li>
-          <li><strong>Issues?</strong> Email <a href="mailto:support@doodler.com">support@doodler.com</a> or visit <a href="#">Support Page</a>.</li>
-        </ul>
+        <div class="faq-grid">
+          <div class="faq-item">
+            <h3>How do I sign up?</h3>
+            <p>Click "Sign Up", enter your email, and create a strong passphrase.</p>
+          </div>
+          <div class="faq-item">
+            <h3>Forgot passphrase?</h3>
+            <p>Contact support at <a href="mailto:support@doodler.com">support@doodler.com</a>.</p>
+          </div>
+          <div class="faq-item">
+            <h3>How does encryption work?</h3>
+            <p>Doodler uses OpenPGP for end-to-end encryption.</p>
+          </div>
+          <div class="faq-item">
+            <h3>Need more help?</h3>
+            <p>Email <a href="mailto:support@doodler.com">support@doodler.com</a>.</p>
+          </div>
+        </div>
       </div>
     </section>
   </main>
 
-  <dialog id="loginPopup" role="dialog" aria-labelledby="login-title">
+   <!-- ✅ Login Modal -->
+  <dialog id="loginPopup">
     <div class="modal-content">
-      <button class="close-modal-btn" aria-label="Close login modal">×</button>
-      <h3 id="login-title">Login</h3>
+      <button class="close-modal-btn" aria-label="Close Login">×</button>
+      <h3>Login</h3>
       <form id="loginForm">
-        <div class="input-box">
-          <label for="login-email">Email:</label>
-          <input type="email" id="login-email" required>
+        <div class="input-group">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" required />
         </div>
-        <div class="input-box password-container">
-          <label for="login-passphrase">Passphrase:</label>
-          <input type="password" id="login-passphrase" required aria-describedby="login-passphrase-criteria">
-          <button type="button" class="toggle-password" aria-label="Toggle password visibility">👁️</button>
+        <div class="input-group password-wrapper">
+          <label for="login-passphrase">Passphrase</label>
+          <input type="password" id="login-passphrase" required />
+          <button type="button" class="toggle-password">👁️</button>
         </div>
-        <p id="login-passphrase-criteria" class="criteria-message">Enter your secure passphrase.</p>
-        <div class="remember-forget">
-          <label><input type="checkbox" id="remember-me"> Remember me</label>
-          <a href="#" class="forgot-password-link">Forgot Passphrase?</a>
+        <p class="criteria-message"></p>
+        <div class="login-options">
+          <a href="#" class="forgot-passphrase">Forgot Passphrase?</a>
         </div>
         <button type="submit" class="login-button">Login</button>
-        <div class="google-icon">
-      <button class="gsi-material-button signup-google">
-        <div class="gsi-material-button-icon"></div>
-        <span class="gsi-material-button-contents">Login with Google</span>
-      </button>
-    </div>
+        <button type="button" class="login-google">Login with Google</button>
       </form>
     </div>
   </dialog>
 
-  <dialog id="signupPopup" role="dialog" aria-labelledby="signup-title">
+  <!-- ✅ Sign Up Modal -->
+  <dialog id="signupPopup">
     <div class="modal-content">
-      <button class="close-modal-btn" aria-label="Close signup modal">×</button>
-      <h3 id="signup-title">Signup</h3>
+      <button class="close-modal-btn" aria-label="Close Signup">×</button>
+      <h3>Sign Up</h3>
       <form id="signupForm">
-        <div class="input-box">
-          <label for="signup-email">Email:</label>
-          <input type="email" id="signup-email" required>
+        <div class="input-group">
+          <label for="signup-email">Email</label>
+          <input type="email" id="signup-email" required />
         </div>
-        <div class="input-box password-container">
-          <label for="signup-passphrase">Passphrase:</label>
-          <input type="password" id="signup-passphrase" required aria-describedby="signup-passphrase-criteria">
-          <button type="button" class="toggle-password" aria-label="Toggle password visibility">👁️</button>
+        <div class="input-group password-wrapper">
+          <label for="signup-passphrase">Create Passphrase</label>
+          <input type="password" id="signup-passphrase" required />
+          <button type="button" class="toggle-password">👁️</button>
         </div>
-        <div class="input-box password-container">
-          <label for="confirm-passphrase">Confirm Passphrase:</label>
-          <input type="password" id="confirm-passphrase" required aria-describedby="signup-passphrase-criteria">
-          <button type="button" class="toggle-password" aria-label="Toggle password visibility">👁️</button>
+        <div class="input-group password-wrapper">
+          <label for="confirm-passphrase">Confirm Passphrase</label>
+          <input type="password" id="confirm-passphrase" required />
+          <button type="button" class="toggle-password">👁️</button>
         </div>
-        <p id="signup-passphrase-criteria" class="criteria-message">Passphrase: 8-15 chars, number, lowercase, uppercase, special char (!@#$%^&*()).</p>
+        <p class="criteria-message"></p>
+        <p class="passphrase-info">8–15 characters, one lowercase, uppercase, number & special character</p>
         <button type="submit" class="signup-button">Sign Up</button>
-        <br>OR<br>
-        <div class="google-icon">
-      <button class="gsi-material-button signup-google">
-        <div class="gsi-material-button-icon"></div>
-        <span class="gsi-material-button-contents">Sign up with Google</span>
-      </button>
-    </div>
+        <button type="button" class="signup-google">Sign Up with Google</button>
       </form>
     </div>
   </dialog>
 
-  <button id="ai-chatbot-btn" aria-label="Open AI chatbot" ></button>
-  <div id="ai-chat-window" class="ai-chat-window" role="log" aria-live="polite">
-    <div class="ai-chat-header">
-      <span>AI Support</span>
-      <button id="ai-chat-close-btn" aria-label="Close AI chat">×</button>
-    </div>
-    <div id="ai-chat-messages" class="ai-chat-messages"></div>
-    <div class="ai-chat-input-area">
-      <input type="text" id="ai-chat-input" placeholder="Ask me anything..." aria-label="AI chat input">
-      <button id="ai-chat-send-btn" aria-label="Send AI chat message">Send</button>
+  <!-- ✅ AI Chatbot -->
+  <div class="ai-chatbot">
+    <button id="ai-chatbot-btn" aria-label="Open AI Chatbot">💬</button>
+    <div id="ai-chat-window" class="ai-chat-window">
+      <div class="ai-chat-header">
+        <span>Doodler AI Assistant</span>
+        <button id="ai-chat-close-btn" aria-label="Close AI Chat">×</button>
+      </div>
+      <div id="ai-chat-messages" class="ai-chat-messages"></div>
+      <div class="ai-chat-input">
+        <input type="text" id="ai-chat-input" placeholder="Ask me anything..." />
+        <button id="ai-chat-send-btn">Send</button>
+      </div>
     </div>
   </div>
 
-  <button id="scroll-top" aria-label="Scroll to top">↑</button>
+  <!-- ✅ Scroll to Top Button -->
+  <button id="scroll-top" aria-label="Scroll to Top">↑</button>
 
+  <!-- ✅ Footer -->
   <footer class="site-footer">
-    <p>Copyright © 2023 by Doodler. Contact: <a href="mailto:support@doodler.com">support@doodler.com</a></p>
+    <p>© 2023–2025 by Doodler. Contact: <a href="mailto:support@doodler.com">support@doodler.com</a></p>
   </footer>
 
-  <script src="https://unpkg.com/openpgp@5.10.1/dist/openpgp.min.js" defer></script>
-  <script src="script.js" defer></script>
+  <!-- ✅ Scripts -->
+  <script src="ai-chatbot.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
